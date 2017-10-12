@@ -3,9 +3,7 @@ extern crate log;
 extern crate genetic_mkm;
 
 use genetic_mkm::logger;
-use genetic_mkm::genetic::population::Population;
-
-use genetic_mkm::genetic::test::*;
+use genetic_mkm::client::connection::Connection;
 
 pub fn main() {
     match logger::init() {
@@ -16,14 +14,12 @@ pub fn main() {
         }
     }
 
-    let mut pop: Population<Test, u8> = Population::new(20, 25);
-
-    for _ in 0..100 {
-        pop.cycle(10000);
-        //let pool = pop.get_pool();
-
-        info!("Max Fitness: {}", pop.get_max_fitness());
-
-    }
+    let conn = match Connection::new("app_token.json") {
+        Ok(c) => c,
+        Err(e) => {
+            error!("{}", e);
+            return;
+        }
+    };
 
 }
