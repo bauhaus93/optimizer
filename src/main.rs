@@ -1,9 +1,9 @@
 #[macro_use]
 extern crate log;
-extern crate genetic_mkm;
+extern crate optimizer;
 
-use genetic_mkm::logger;
-use genetic_mkm::client::connection::Connection;
+use optimizer::logger;
+use optimizer::client::connection::Connection;
 
 pub fn main() {
     match logger::init() {

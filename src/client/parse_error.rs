@@ -27,8 +27,8 @@ impl Error for ParseError {
 
     fn description(&self) -> &str {
         match *self {
-            ParseError::Io(_) => "IO Error",
-            ParseError::Json(_) => "JSON Parse Error"
+            ParseError::Io(_) => "io error",
+            ParseError::Json(_) => "json parse error"
         }
     }
 
@@ -43,8 +43,8 @@ impl Error for ParseError {
 impl fmt::Display for ParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ParseError::Io(ref io_error) => write!(f, "IO operation failed: {}", io_error.description()),
-            ParseError::Json(ref json_error) => write!(f, "Could not parse json: {}", json_error.description()),
+            ParseError::Io(ref io_error) => write!(f, "io operation failed: {}", io_error),
+            ParseError::Json(ref json_error) => write!(f, "could not parse json: {}", json_error),
         }
     }
 }
