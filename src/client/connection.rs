@@ -1,55 +1,54 @@
-
-use hyper;
-use hyper::{ Client, Method, Request };
-use hyper::header;
-use hyper_tls::HttpsConnector;
-use tokio_core::reactor::Core;
-use futures::Future;
-
+use curl::easy;
 
 use client::connection_error::ConnectionError;
 use client::token;
-use client::authorization_header;
+use client::authorization_header::create_authorization_header;
 
 pub struct Connection {
+    handle: easy::Easy,
+    token: token::Token
 }
-
 
 impl Connection {
 
     pub fn new(token_path: &str) -> Result<Connection, ConnectionError> {
+        info!("creating new connection");
 
-        let realm = "http://www.mkmapi.eu/ws/v1.1/account";
+        info!("creating curl handle");
+        let handle = easy::Easy::new();
 
         info!("retrieving app token from file \"{}\"", token_path);
         let token = try!(token::parse_app_token(token_path));
-        info!("parsed token: {},", token);
 
-        let auth_hdr = try!(authorization_header::AuthorizationHeader::new(
-            token.clone(),
-            realm
-        ));
+        let connection = Connection {
+            handle: handle,
+            token
+        };
 
-        //info!("authorization header: {}", auth_hdr);
+        Ok(connection)
+    }
 
-        let uri = try!(realm.parse::<hyper::Uri>());
+    pub fn request(&mut self, method: &str, path: &str) -> Result<String, ConnectionError> {
+        let realm = format!("https://www.mkmapi.eu{}", path);
 
-        let mut request: Request = Request::new(Method::Get, uri);
-        request.headers_mut().set(header::Authorization(auth_hdr));
+        info!("requesting {} {}", method, realm);
 
-        let mut core = try!(Core::new());
-        let client = Client::configure()
-            .connector(HttpsConnector::new(4, &core.handle()).unwrap()) //TODO handle error case native_tls
-            .build(&core.handle());
+        let auth_hdr = try!(create_authorization_header(method, &realm, &self.token));
 
-        let work = client.request(request).and_then(| res | {
-            info!("response: {}", res.status());
-            Ok(())
-        });
+        let mut list = easy::List::new();
+        try!(list.append(&auth_hdr));
+        try!(self.handle.url(&realm));
+        try!(self.handle.http_headers(list));
+        try!(self.handle.perform());
 
-        try!(core.run(work));
+        let response_code = try!(self.handle.response_code());
+        info!("response code {}", response_code);
 
-        Ok(Connection {})
+        if response_code != 200 {
+            return Err(ConnectionError::BadResponse(response_code));
+        }
+
+        Ok(" ".to_owned())
     }
 
 

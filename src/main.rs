@@ -14,12 +14,20 @@ pub fn main() {
         }
     }
 
-    let conn = match Connection::new("app_token.json") {
+    let mut conn = match Connection::new("app_token.json") {
         Ok(c) => c,
         Err(e) => {
             error!("{}", e);
             return;
         }
     };
+
+    match conn.request("GET", "/ws/v2.0/account") {
+        Ok(_) => {},
+        Err(e) => {
+            error!("{}", e);
+            return
+        }
+    }
 
 }
