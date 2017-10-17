@@ -3,7 +3,7 @@ extern crate log;
 extern crate optimizer;
 
 use optimizer::logger;
-use optimizer::client::connection::Connection;
+use optimizer::client::mkm_client::MKMClient;
 
 pub fn main() {
     match logger::init() {
@@ -14,7 +14,7 @@ pub fn main() {
         }
     }
 
-    let mut conn = match Connection::new("app_token.json") {
+    let mut client = match MKMClient::new("app_token.json") {
         Ok(c) => c,
         Err(e) => {
             error!("{}", e);
@@ -22,12 +22,13 @@ pub fn main() {
         }
     };
 
-    match conn.request("GET", "/ws/v2.0/account") {
-        Ok(_) => {},
+    let mp = match client.find_metaproducts("black", true) {
+        Ok(mp) => mp,
         Err(e) => {
             error!("{}", e);
-            return
+            return;
         }
-    }
+    };
+
 
 }

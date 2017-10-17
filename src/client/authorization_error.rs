@@ -37,8 +37,8 @@ impl Error for AuthorizationError {
 impl fmt::Display for AuthorizationError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            AuthorizationError::StringParse => write!(f, "failed to parse string"),
-            AuthorizationError::SysTime(ref err) => write!(f, "failure in system time: {}", err)
+            AuthorizationError::StringParse => write!(f, "string parse error"),
+            AuthorizationError::SysTime(ref err) => write!(f, "system time error: {}", err)
         }
     }
 }

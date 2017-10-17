@@ -11,15 +11,16 @@ use crypto::sha1::Sha1;
 use base64;
 
 use client::authorization_error::AuthorizationError;
-use client::token::Token;
+use client::entities::token::Token;
 
 const OAUTH_VERSION: &str = "1.0";
 const OAUTH_SIGNATURE_METHOD: &str = "HMAC-SHA1";
 
-pub fn create_authorization_header(method: &str, realm: &str, token: &Token) -> Result<String, AuthorizationError> {
+
+pub fn create_authorization_header(method: &str, realm: &str, query: &Vec<(&str, &str)>, token: &Token) -> Result<String, AuthorizationError> {
     let timestamp = try!(SystemTime::now().duration_since(time::UNIX_EPOCH)).as_secs().to_string();
     let nonce = rand::thread_rng().gen_ascii_chars().take(32).collect::<String>().to_lowercase();
-    let signature = try!(calculate_signature(method, realm, &token, &nonce, &timestamp));
+    let signature = try!(calculate_signature(method, realm, query, &token, &nonce, &timestamp));
 
     let header = format!("Authorization: \
         OAuth \
@@ -43,10 +44,27 @@ pub fn create_authorization_header(method: &str, realm: &str, token: &Token) -> 
     Ok(header)
 }
 
-fn calculate_signature(method: &str, realm: &str, token: &Token, nonce: &str, timestamp: &str) -> Result<String, AuthorizationError> {
+fn calculate_signature(method: &str, realm: &str, query: &Vec<(&str, &str)>, token: &Token, nonce: &str, timestamp: &str) -> Result<String, AuthorizationError> {
     let base_string = format!("{}&{}&", method, utf8_percent_encode(realm, USERINFO_ENCODE_SET).to_string());
+    let mut params: Vec<(&str, &str)> = query.clone();
+    params.push(("oauth_consumer_key", token.get_app_token()));
+    params.push(("oauth_nonce", nonce));
+    params.push(("oauth_signature_method", OAUTH_SIGNATURE_METHOD));
+    params.push(("oauth_timestamp", timestamp));
+    params.push(("oauth_token", token.get_access_token()));
+    params.push(("oauth_version", OAUTH_VERSION));
+    params.sort();
 
-    let param_string= format!("\
+    let mut param_string = String::new();
+
+    params.iter().for_each(| &(key, value) | {
+        param_string.push_str(&format!("{}%3D{}%26", key, value));
+    });
+    param_string.pop(); param_string.pop(); param_string.pop();
+
+    info!("param_string: {}", param_string);
+
+    /*let param_string= format!("\
         oauth_consumer_key%3D{}%26\
         oauth_nonce%3D{}%26\
         oauth_signature_method%3D{}%26\
@@ -59,7 +77,7 @@ fn calculate_signature(method: &str, realm: &str, token: &Token, nonce: &str, ti
         timestamp,
         token.get_access_token(),
         OAUTH_VERSION
-    );
+    );*/
 
     let base_string = format!("{}{}",
         base_string,

@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fmt;
+use std::str;
 
 use curl;
 
@@ -11,7 +12,8 @@ pub enum ConnectionError {
     Parse(ParseError),
     Authorization(AuthorizationError),
     Curl(curl::Error),
-    BadResponse(u32)
+    BadResponse(u32),
+    Utf8(str::Utf8Error)
 }
 
 impl From<ParseError> for ConnectionError {
@@ -32,6 +34,12 @@ impl From<curl::Error> for ConnectionError {
     }
 }
 
+impl From<str::Utf8Error> for ConnectionError {
+    fn from(err: str::Utf8Error) -> ConnectionError {
+        ConnectionError::Utf8(err)
+    }
+}
+
 impl Error for ConnectionError {
 
     fn description(&self) -> &str {
@@ -39,7 +47,8 @@ impl Error for ConnectionError {
             ConnectionError::Parse(_) => "parse error",
             ConnectionError::Authorization(_) => "authorization error",
             ConnectionError::Curl(_) => "curl error",
-            ConnectionError::BadResponse(_) => "bad http response"
+            ConnectionError::BadResponse(_) => "bad http response",
+            ConnectionError::Utf8(_) => "utf8 conversion error",
         }
     }
 
@@ -48,7 +57,8 @@ impl Error for ConnectionError {
             ConnectionError::Parse(ref parse_error) => Some(parse_error),
             ConnectionError::Authorization(ref auth_error) => Some(auth_error),
             ConnectionError::Curl(ref err) => Some(err),
-            ConnectionError::BadResponse(_) => None
+            ConnectionError::BadResponse(_) => None,
+            ConnectionError::Utf8(ref err) => Some(err)
         }
     }
 }
@@ -56,10 +66,11 @@ impl Error for ConnectionError {
 impl fmt::Display for ConnectionError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ConnectionError::Parse(ref parse_error) => write!(f, "failed to parse json: {}", parse_error),
-            ConnectionError::Authorization(ref auth_error) => write!(f, "authorization failure: {}", auth_error),
+            ConnectionError::Parse(ref parse_error) => write!(f, "json parse error: {}", parse_error),
+            ConnectionError::Authorization(ref auth_error) => write!(f, "authorization error: {}", auth_error),
             ConnectionError::Curl(ref err) => write!(f, "curl error: {}", err),
-            ConnectionError::BadResponse(code) => write!(f, "bad http response: {}", code)
+            ConnectionError::BadResponse(code) => write!(f, "bad http response: {}", code),
+            ConnectionError::Utf8(ref err) => write!(f, "uft8 error: {}", err)
         }
 
     }
