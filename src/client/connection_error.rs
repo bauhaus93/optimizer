@@ -1,24 +1,26 @@
 use std::error::Error;
 use std::fmt;
 use std::str;
+use std::io;
 
 use curl;
 
-use client::parse_error::ParseError;
 use client::authorization_error::AuthorizationError;
+use client::entities::entity_error::EntityError;
 
 #[derive(Debug)]
 pub enum ConnectionError {
-    Parse(ParseError),
+    Io(io::Error),
     Authorization(AuthorizationError),
     Curl(curl::Error),
     BadResponse(u32),
-    Utf8(str::Utf8Error)
+    Utf8(str::Utf8Error),
+    Entity(EntityError)
 }
 
-impl From<ParseError> for ConnectionError {
-    fn from(err: ParseError) -> ConnectionError {
-        ConnectionError::Parse(err)
+impl From<io::Error> for ConnectionError {
+    fn from(err: io::Error) -> ConnectionError {
+        ConnectionError::Io(err)
     }
 }
 
@@ -40,25 +42,33 @@ impl From<str::Utf8Error> for ConnectionError {
     }
 }
 
+impl From<EntityError> for ConnectionError {
+    fn from(err: EntityError) -> ConnectionError {
+        ConnectionError::Entity(err)
+    }
+}
+
 impl Error for ConnectionError {
 
     fn description(&self) -> &str {
         match *self {
-            ConnectionError::Parse(_) => "parse error",
+            ConnectionError::Io(_) => "io error",
             ConnectionError::Authorization(_) => "authorization error",
             ConnectionError::Curl(_) => "curl error",
             ConnectionError::BadResponse(_) => "bad http response",
             ConnectionError::Utf8(_) => "utf8 conversion error",
+            ConnectionError::Entity(_) => "entity error"
         }
     }
 
     fn cause(&self) -> Option<&Error> {
         match *self {
-            ConnectionError::Parse(ref parse_error) => Some(parse_error),
+            ConnectionError::Io(ref io_error) => Some(io_error),
             ConnectionError::Authorization(ref auth_error) => Some(auth_error),
             ConnectionError::Curl(ref err) => Some(err),
             ConnectionError::BadResponse(_) => None,
-            ConnectionError::Utf8(ref err) => Some(err)
+            ConnectionError::Utf8(ref err) => Some(err),
+            ConnectionError::Entity(ref err) => Some(err)
         }
     }
 }
@@ -66,11 +76,12 @@ impl Error for ConnectionError {
 impl fmt::Display for ConnectionError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ConnectionError::Parse(ref parse_error) => write!(f, "json parse error: {}", parse_error),
+            ConnectionError::Io(ref io_error) => write!(f, "io error: {}", io_error),
             ConnectionError::Authorization(ref auth_error) => write!(f, "authorization error: {}", auth_error),
             ConnectionError::Curl(ref err) => write!(f, "curl error: {}", err),
             ConnectionError::BadResponse(code) => write!(f, "bad http response: {}", code),
-            ConnectionError::Utf8(ref err) => write!(f, "uft8 error: {}", err)
+            ConnectionError::Utf8(ref err) => write!(f, "utf8 error: {}", err),
+            ConnectionError::Entity(ref err) => write!(f, "entity error: {}", err)
         }
 
     }

@@ -22,7 +22,7 @@ pub fn main() {
         }
     };
 
-    let mp = match client.find_metaproducts("black", true) {
+    let mp = match client.find_metaproducts("Tarmogoyf", true) {
         Ok(mp) => mp,
         Err(e) => {
             error!("{}", e);

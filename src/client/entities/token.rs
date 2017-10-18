@@ -1,9 +1,9 @@
-use std::fs::File;
 use std::fmt;
 
 use serde_json;
 
-use client::parse_error::ParseError;
+use client::entities::entity::Entity;
+use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Token {
@@ -53,10 +53,9 @@ impl fmt::Display for Token {
     }
 }
 
-pub fn parse_app_token(path: &str) -> Result<Token, ParseError> {
-
-    let file = try!(File::open(path));
-    let token = try!(serde_json::from_reader(file));
-
-    Ok(token)
+impl Entity for Token {
+    fn from_json(json: &str) -> Result<Token, EntityError> {
+        let token = try!(serde_json::from_str(json));
+        Ok(token)
+    }
 }

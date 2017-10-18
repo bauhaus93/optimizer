@@ -23,8 +23,7 @@ impl MKMClient {
 
     pub fn find_metaproducts(&mut self, name: &str, exact: bool) -> Result<Vec<Metaproduct>, ClientError> {
         let mut query: Vec<(&str, &str)> = Vec::new();
-        query.push(("name", name));
-
+        query.push(("search", name));
         query.push(("exact",
             match exact {
                 true => "true",

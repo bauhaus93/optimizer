@@ -1,10 +1,13 @@
 use std::str;
+use std::fs::File;
+use std::io::Read;
 
 use curl::easy;
 use url::percent_encoding::{ utf8_percent_encode, QUERY_ENCODE_SET };
 
 use client::connection_error::ConnectionError;
-use client::entities::token;
+use client::entities::token::Token;
+use client::entities::entity::Entity;
 use client::authorization_header::create_authorization_header;
 
 fn create_uri(realm: &str, query: &Vec<(&str, &str)>) -> String {
@@ -24,7 +27,7 @@ fn create_uri(realm: &str, query: &Vec<(&str, &str)>) -> String {
 
 pub struct Connection {
     handle: easy::Easy,
-    token: token::Token
+    token: Token
 }
 
 impl Connection {
@@ -36,7 +39,10 @@ impl Connection {
         let handle = easy::Easy::new();
 
         info!("retrieving app token from file \"{}\"", token_path);
-        let token = try!(token::parse_app_token(token_path));
+        let mut file = try!(File::open(token_path));
+        let mut content = String::new();
+        try!(file.read_to_string(&mut content));
+        let token = try!(Token::from_json(&content));
 
         let connection = Connection {
             handle: handle,
@@ -50,7 +56,7 @@ impl Connection {
         let realm = format!("https://www.mkmapi.eu/ws/v2.0/output.json/{}", path);
         let uri = create_uri(&realm, query);
 
-        info!("requesting {} {}", method, realm);
+        info!("requesting {} {}", method, uri);
 
         let auth_hdr = try!(create_authorization_header(method, &realm, query, &self.token));
 
