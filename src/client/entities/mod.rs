@@ -4,3 +4,8 @@ pub mod token;
 pub mod metaproduct;
 pub mod product;
 pub mod localization;
+pub mod link;
+pub mod category;
+pub mod expansion;
+pub mod price_guide;
+pub mod reprint;

@@ -32,6 +32,7 @@ impl MKMClient {
         );
 
         let json_str = try!(self.connection.request("GET", "metaproducts/find", &query));
+        info!("output: {}", json_str);
         let metaproducts = try!(Vec::<Metaproduct>::from_json(&json_str));
 
         Ok(metaproducts)

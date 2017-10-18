@@ -5,9 +5,12 @@ use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Localization {
-    name: String,
-    language_id: u32,
-    language_name: String
+    #[serde(rename="idLanguage")]
+    language_id: String,
+    #[serde(rename="languageName")]
+    language_name: String,
+    #[serde(rename="name")]
+    name: String
 }
 
 impl Entity for Vec<Localization> {
