@@ -22,7 +22,7 @@ pub fn main() {
         }
     };
 
-    let ps = match client.find_products("Tarmogoyf", true, None, None, 0, 100) {
+    let p = match client.get_product(295893) {
         Ok(p) => p,
         Err(e) => {
             error!("{}", e);
@@ -30,9 +30,6 @@ pub fn main() {
         }
     };
 
-    for p in ps {
-        info!("product: name = {}, expansion_name = {}", p.get_name_en(), p.get_expansion_name());
-    }
-
+    info!("product: name = {}, expansion_name = , avg_price: {}", p.get_name_en(), p.get_price_guide().unwrap().get_avg());
 
 }

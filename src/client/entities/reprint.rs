@@ -9,8 +9,8 @@ pub struct Reprint {
     product_id: u32,
     #[serde(rename="expansion")]
     expansion_name: String,
-    #[serde(rename="expansionIcon")]
-    icon_url: String
+    #[serde(rename="expIcon")]
+    icon_id: u32
 }
 
 impl Entity for Reprint {

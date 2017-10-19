@@ -10,7 +10,7 @@ pub struct Expansion {
     #[serde(rename="enName")]
     name_en: String,
     #[serde(rename="expansionIcon")]
-    icon_url: String
+    icon_id: u32
 }
 
 impl Entity for Expansion {

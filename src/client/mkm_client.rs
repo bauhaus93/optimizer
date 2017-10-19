@@ -23,7 +23,7 @@ impl MKMClient {
     }
 
     pub fn find_metaproducts(&mut self, search: &str, exact: bool, game_id: Option<u32>, language_id: Option<u32>) -> Result<Vec<Metaproduct>, ClientError> {
-        info!("finding metaproducts: search = {}, exact = {}, game_id = {:?}, language_id = {:?}",
+        info!("find metaproducts: search = {}, exact = {}, game_id = {:?}, language_id = {:?}",
             search,
             exact,
             game_id,
@@ -64,7 +64,7 @@ impl MKMClient {
     }
 
     pub fn find_products(&mut self, search: &str, exact: bool, game_id: Option<u32>, language_id: Option<u32>, start: u32, max_results: u32) -> Result<Vec<Product>, ClientError> {
-        info!("finding products: search = {}, exact = {}, game_id = {:?}, language_id = {:?}, start = {}, max_results = {}",
+        info!("find products: search = {}, exact = {}, game_id = {:?}, language_id = {:?}, start = {}, max_results = {}",
             search,
             exact,
             game_id,
@@ -107,6 +107,22 @@ impl MKMClient {
         let products = try!(Vec::<Product>::from_json(&json_str));
 
         info!("parsed {} products", products.len());
+
+        Ok(products)
+    }
+
+    pub fn get_product(&mut self, product_id: u32) -> Result<Product, ClientError> {
+        info!("get product: id = {}", product_id);
+
+        let query: Vec<(&str, &str)> = Vec::new();
+
+        let uri = format!("products/{}", product_id);
+
+        let json_str = try!(self.connection.request("GET", &uri, &query));
+        info!("{}", json_str);
+        let products = try!(Product::from_json(&json_str));
+
+        info!("parsed 1 product");
 
         Ok(products)
     }

@@ -37,7 +37,7 @@ pub struct Product {
     #[serde(rename="rarity")]
     rarity: Option<String>,
     #[serde(rename="expansionName")]
-    expansion_name: String,
+    expansion_name: Option<String>,
     #[serde(rename="links")]
     links: Vec<Link>,
     #[serde(rename="expansion")]
@@ -52,6 +52,12 @@ pub struct Product {
 struct Products {
     #[serde(rename="product")]
     products: Vec<Product>
+}
+
+#[derive(Deserialize, Debug, Clone)]
+struct ProductContainer {
+    #[serde(rename="product")]
+    product: Product
 }
 
 impl Product {
@@ -113,8 +119,11 @@ impl Product {
         }
     }
 
-    pub fn get_expansion_name(&self) -> &str {
-        &self.expansion_name
+    pub fn get_expansion_name(&self) -> Option<&str> {
+        match self.expansion_name {
+            Some(ref name) => Some(name),
+            None => None
+        }
     }
 
     pub fn get_links(&self) -> &[Link] {
@@ -150,9 +159,16 @@ impl Products {
     }
 }
 
+impl ProductContainer {
+    pub fn consume(self) -> Product {
+        self.product
+    }
+}
+
 impl Entity for Product {
     fn from_json(json: &str) -> Result<Product, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        let p: ProductContainer = try!(serde_json::from_str(json));
+        Ok(p.consume())
     }
 }
 
