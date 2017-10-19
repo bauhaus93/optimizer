@@ -10,6 +10,7 @@ use client::entities::price_guide::PriceGuide;
 use client::entities::reprint::Reprint;
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename="product")]
 pub struct Product {
     #[serde(rename="idProduct")]
     id: u32,

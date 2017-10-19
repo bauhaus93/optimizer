@@ -7,8 +7,17 @@ use client::entities::link::Link;
 use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename="metaproduct")]
 pub struct Metaproduct {
+    #[serde(rename="metaproduct")]
+    metaproduct: MetaproductFields,
+    #[serde(rename="product")]
+    products: Vec<Product>,
+    #[serde(rename="links")]
+    links: Vec<Link>
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct MetaproductFields {
     #[serde(rename="idMetaproduct")]
     id: u32,
     #[serde(rename="enName")]
@@ -18,11 +27,56 @@ pub struct Metaproduct {
     #[serde(rename="localization")]
     localization: Vec<Localization>,
     #[serde(rename="image")]
-    image_url: String,
-    #[serde(rename="product")]
-    products: Vec<Product>,
-    #[serde(rename="links")]
-    links: Vec<Link>
+    image_url: String
+}
+
+#[derive(Deserialize, Debug, Clone)]
+struct Metaproducts {
+    #[serde(rename="metaproduct")]
+    metaproducts: Vec<Metaproduct>
+}
+
+impl Metaproduct {
+    pub fn get_metaproduct(&self) -> &MetaproductFields {
+        &self.metaproduct
+    }
+
+    pub fn get_products(&self) -> &[Product] {
+        &self.products
+    }
+
+    pub fn get_links(&self) -> &[Link] {
+        &self.links
+    }
+}
+
+impl MetaproductFields {
+
+    pub fn get_id(&self) -> u32 {
+        self.id
+    }
+
+    pub fn get_name_en(&self) -> &str {
+        &self.name_en
+    }
+
+    pub fn get_name_loc(&self) -> &str {
+        &self.name_loc
+    }
+
+    pub fn get_localizations(&self) -> &[Localization] {
+        &self.localization
+    }
+
+    pub fn get_image_url(&self) -> &str {
+        &self.image_url
+    }
+}
+
+impl Metaproducts {
+    pub fn consume(self) -> Vec<Metaproduct> {
+        self.metaproducts
+    }
 }
 
 impl Entity for Metaproduct {
@@ -33,6 +87,7 @@ impl Entity for Metaproduct {
 
 impl Entity for Vec<Metaproduct> {
     fn from_json(json: &str) -> Result<Vec<Metaproduct>, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        let mps: Metaproducts = try!(serde_json::from_str(json));
+        Ok(mps.consume())
     }
 }

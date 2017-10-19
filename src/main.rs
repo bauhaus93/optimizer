@@ -22,13 +22,17 @@ pub fn main() {
         }
     };
 
-    let mp = match client.find_metaproducts("Tarmogoyf", true) {
+    let mps = match client.find_metaproducts("Tarmogoyf", true) {
         Ok(mp) => mp,
         Err(e) => {
             error!("{}", e);
             return;
         }
     };
+
+    for mp in mps {
+        info!("metaproduct: name = {}, id = {}", mp.get_metaproduct().get_name_en(), mp.get_metaproduct().get_id());
+    }
 
 
 }

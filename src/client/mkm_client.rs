@@ -22,6 +22,7 @@ impl MKMClient {
     }
 
     pub fn find_metaproducts(&mut self, name: &str, exact: bool) -> Result<Vec<Metaproduct>, ClientError> {
+        info!("find metaproducts");
         let mut query: Vec<(&str, &str)> = Vec::new();
         query.push(("search", name));
         query.push(("exact",
@@ -32,8 +33,10 @@ impl MKMClient {
         );
 
         let json_str = try!(self.connection.request("GET", "metaproducts/find", &query));
-        info!("output: {}", json_str);
+        //info!("output: {}", json_str);
         let metaproducts = try!(Vec::<Metaproduct>::from_json(&json_str));
+
+        info!("found {} metaproducts", metaproducts.len());
 
         Ok(metaproducts)
 
