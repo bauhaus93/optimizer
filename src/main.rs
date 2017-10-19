@@ -22,14 +22,13 @@ pub fn main() {
         }
     };
 
-    let p = match client.get_product(295893) {
-        Ok(p) => p,
+    let articles = match client.get_articles(295893, 0, 1) {
+        Ok(a) => a,
         Err(e) => {
             error!("{}", e);
             return;
         }
     };
 
-    info!("product: name = {}, expansion_name = , avg_price: {}", p.get_name_en(), p.get_price_guide().unwrap().get_avg());
 
 }

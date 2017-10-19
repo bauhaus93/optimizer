@@ -4,6 +4,7 @@ use client::connection::Connection;
 use client::entities::entity::Entity;
 use client::entities::metaproduct::Metaproduct;
 use client::entities::product::Product;
+use client::entities::article::Article;
 
 pub struct MKMClient {
     connection: Connection
@@ -63,7 +64,7 @@ impl MKMClient {
         Ok(metaproducts)
     }
 
-    pub fn find_products(&mut self, search: &str, exact: bool, game_id: Option<u32>, language_id: Option<u32>, start: u32, max_results: u32) -> Result<Vec<Product>, ClientError> {
+    pub fn find_products(&mut self, search: &str, exact: bool, start: u32, max_results: u32, game_id: Option<u32>, language_id: Option<u32>) -> Result<Vec<Product>, ClientError> {
         info!("find products: search = {}, exact = {}, game_id = {:?}, language_id = {:?}, start = {}, max_results = {}",
             search,
             exact,
@@ -90,7 +91,7 @@ impl MKMClient {
         query.push(("search", search));
         query.push(("exact", &exact_str));
         query.push(("start", &start_str));
-        query.push(("max_results", &max_results_str));
+        query.push(("maxResults", &max_results_str));
 
         match game_id_str {
             Some(ref id) => query.push(("idGame", id)),
@@ -125,6 +126,37 @@ impl MKMClient {
         info!("parsed 1 product");
 
         Ok(products)
+    }
+
+    pub fn get_articles(&mut self, product_id: u32, start: u32, max_results: u32) -> Result<Vec<Article>, ClientError> {
+        info!("get articles: product_id = {}, start = {}, max_results = {}",
+            product_id,
+            start,
+            max_results
+        );
+
+        let start_str = start.to_string();
+        let max_results_str = max_results.to_string();
+
+        let mut query: Vec<(&str, &str)> = Vec::new();
+
+        query.push(("start", &start_str));
+        query.push(("maxResults", &max_results_str));
+
+        let uri = format!("articles/{}", product_id);
+
+        let json_str = try!(self.connection.request("GET", &uri, &query));
+
+        use std::fs::File;
+        use std::io::prelude::*;
+        let mut f = File::create("output.json").unwrap();
+        f.write_all(json_str.as_bytes());
+
+        let articles = try!(Vec::<Article>::from_json(&json_str));
+
+        info!("parsed {} articles", articles.len());
+
+        Ok(articles)
     }
 
 }

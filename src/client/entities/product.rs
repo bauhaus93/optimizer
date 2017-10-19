@@ -10,7 +10,6 @@ use client::entities::price_guide::PriceGuide;
 use client::entities::reprint::Reprint;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename="product")]
 pub struct Product {
     #[serde(rename="idProduct")]
     id: u32,
@@ -46,6 +45,24 @@ pub struct Product {
     price_guide: Option<PriceGuide>,
     #[serde(rename="reprint")]
     reprints: Option<Vec<Reprint>>
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct ProductShort {
+    #[serde(rename="enName")]
+    name_en: String,
+    #[serde(rename="locName")]
+    name_loc: String,
+    #[serde(rename="image")]
+    image_url: String,
+    #[serde(rename="expansionName")]
+    expansion_name: Option<String>,
+    #[serde(rename="number")]
+    number: Option<String>,
+    #[serde(rename="expIcon")]
+    icon_id: u32,
+    #[serde(rename="rarity")]
+    rarity: Option<String>
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -176,5 +193,11 @@ impl Entity for Vec<Product> {
     fn from_json(json: &str) -> Result<Vec<Product>, EntityError> {
         let ps: Products = try!(serde_json::from_str(json));
         Ok(ps.consume())
+    }
+}
+
+impl Entity for ProductShort {
+    fn from_json(json: &str) -> Result<ProductShort, EntityError> {
+        Ok(try!(serde_json::from_str(json)))
     }
 }
