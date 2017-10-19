@@ -27,7 +27,7 @@ pub struct Product {
     #[serde(rename="website")]
     website: String,
     #[serde(rename="image")]
-    image_uri: String,
+    image_url: String,
     #[serde(rename="gameName")]
     game_name: String,
     #[serde(rename="categoryName")]
@@ -45,11 +45,120 @@ pub struct Product {
     #[serde(rename="priceGuide")]
     price_guide: Option<PriceGuide>,
     #[serde(rename="reprint")]
-    reprint: Option<Reprint>
+    reprints: Option<Vec<Reprint>>
+}
+
+#[derive(Deserialize, Debug, Clone)]
+struct Products {
+    #[serde(rename="product")]
+    products: Vec<Product>
+}
+
+impl Product {
+
+    pub fn get_id(&self) -> u32 {
+        self.id
+    }
+
+    pub fn get_metaproduct_id(&self) -> u32 {
+        self.metaproduct_id
+    }
+
+    pub fn get_reprint_count(&self) -> u32 {
+        self.reprint_count
+    }
+
+    pub fn get_name_en(&self) -> &str {
+        &self.name_en
+    }
+
+    pub fn get_localizations(&self) -> &[Localization] {
+        &self.localization
+    }
+
+    pub fn get_category(&self) -> Option<&Category> {
+        match self.category {
+            Some(ref cat) => Some(cat),
+            None => None
+        }
+    }
+
+    pub fn get_website(&self) -> &str {
+        &self.website
+    }
+
+    pub fn get_image_url(&self) -> &str {
+        &self.image_url
+    }
+
+    pub fn get_game_name(&self) -> &str {
+        &self.game_name
+    }
+
+    pub fn get_category_name(&self) -> &str {
+        &self.category_name
+    }
+
+    pub fn get_number(&self) -> Option<&str> {
+        match self.number {
+            Some(ref num) => Some(num),
+            None => None
+        }
+    }
+
+    pub fn get_rarity(&self) -> Option<&str> {
+        match self.rarity {
+            Some(ref rarity) => Some(rarity),
+            None => None
+        }
+    }
+
+    pub fn get_expansion_name(&self) -> &str {
+        &self.expansion_name
+    }
+
+    pub fn get_links(&self) -> &[Link] {
+        &self.links
+    }
+
+    pub fn get_expansion(&self) -> Option<&Expansion> {
+        match self.expansion {
+            Some(ref exp) => Some(exp),
+            None => None
+        }
+    }
+
+    pub fn get_price_guide(&self) -> Option<&PriceGuide> {
+        match self.price_guide {
+            Some(ref pg) => Some(pg),
+            None => None
+        }
+    }
+
+    pub fn get_reprints(&self) -> Option<&[Reprint]> {
+        match self.reprints {
+            Some(ref rps) => Some(rps),
+            None => None
+        }
+    }
+
+}
+
+impl Products {
+    pub fn consume(self) -> Vec<Product> {
+        self.products
+    }
 }
 
 impl Entity for Product {
     fn from_json(json: &str) -> Result<Product, EntityError> {
         Ok(try!(serde_json::from_str(json)))
+    }
+}
+
+impl Entity for Vec<Product> {
+    fn from_json(json: &str) -> Result<Vec<Product>, EntityError> {
+        let ps: Products = try!(serde_json::from_str(json));
+        Ok(ps.consume())
     }
 }

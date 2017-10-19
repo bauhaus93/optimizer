@@ -22,16 +22,16 @@ pub fn main() {
         }
     };
 
-    let mps = match client.find_metaproducts("Tarmogoyf", true, None, None) {
-        Ok(mp) => mp,
+    let ps = match client.find_products("Tarmogoyf", true, None, None, 0, 100) {
+        Ok(p) => p,
         Err(e) => {
             error!("{}", e);
             return;
         }
     };
 
-    for mp in mps {
-        info!("metaproduct: name = {}, id = {}", mp.get_metaproduct().get_name_en(), mp.get_metaproduct().get_id());
+    for p in ps {
+        info!("product: name = {}, expansion_name = {}", p.get_name_en(), p.get_expansion_name());
     }
 
 
