@@ -4,12 +4,10 @@ use client::entities::entity::Entity;
 use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
 pub struct Localization {
-    #[serde(rename="idLanguage")]
-    language_id: String,
-    #[serde(rename="languageName")]
+    id_language: String,
     language_name: String,
-    #[serde(rename="name")]
     name: String
 }
 

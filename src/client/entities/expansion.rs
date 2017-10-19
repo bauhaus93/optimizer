@@ -4,13 +4,11 @@ use client::entities::entity::Entity;
 use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
 pub struct Expansion {
-    #[serde(rename="idExpansion")]
-    id: u32,
-    #[serde(rename="enName")]
-    name_en: String,
-    #[serde(rename="expansionIcon")]
-    icon_id: u32
+    id_expansion: u32,
+    en_name: String,
+    expansion_icon: u32
 }
 
 impl Entity for Expansion {

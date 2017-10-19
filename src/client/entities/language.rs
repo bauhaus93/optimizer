@@ -1,9 +1,7 @@
-use serde_json;
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
 pub struct Language {
-    #[serde(rename="idLanguage")]
-    language_id: String,
-    #[serde(rename="languageName")]
+    id_language: String,
     language_name: String,
 }

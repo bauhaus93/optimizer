@@ -1,8 +1,3 @@
-use serde_json;
-
-use client::entities::entity::Entity;
-use client::entities::entity_error::EntityError;
-
 #[derive(Deserialize, Debug, Clone)]
 pub struct PriceGuide {
     #[serde(rename="SELL")]
@@ -43,11 +38,5 @@ impl PriceGuide {
 
     pub fn get_trend(&self) -> f64 {
         self.trend
-    }
-}
-
-impl Entity for PriceGuide {
-    fn from_json(json: &str) -> Result<PriceGuide, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
     }
 }

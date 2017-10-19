@@ -4,13 +4,11 @@ use client::entities::entity::Entity;
 use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
 pub struct Reprint {
-    #[serde(rename="idProduct")]
-    product_id: u32,
-    #[serde(rename="expansion")]
-    expansion_name: String,
-    #[serde(rename="expIcon")]
-    icon_id: u32
+    id_product: u32,
+    expansion: String,
+    exp_icon: u32
 }
 
 impl Entity for Reprint {

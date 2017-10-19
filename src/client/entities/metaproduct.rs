@@ -7,27 +7,21 @@ use client::entities::link::Link;
 use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
 pub struct Metaproduct {
-    #[serde(rename="metaproduct")]
     metaproduct: MetaproductFields,
-    #[serde(rename="product")]
-    products: Vec<Product>,
-    #[serde(rename="links")]
+    product: Vec<Product>,
     links: Vec<Link>
 }
 
 #[derive(Deserialize, Debug, Clone)]
+#[serde(rename_all = "snake_case")]
 pub struct MetaproductFields {
-    #[serde(rename="idMetaproduct")]
-    id: u32,
-    #[serde(rename="enName")]
-    name_en: String,
-    #[serde(rename="locName")]
-    name_loc: String,
-    #[serde(rename="localization")]
+    id_metaproduct: u32,
+    en_name: String,
+    loc_name: String,
     localization: Vec<Localization>,
-    #[serde(rename="image")]
-    image_url: String
+    image: String
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -42,7 +36,7 @@ impl Metaproduct {
     }
 
     pub fn get_products(&self) -> &[Product] {
-        &self.products
+        &self.product
     }
 
     pub fn get_links(&self) -> &[Link] {
@@ -53,15 +47,15 @@ impl Metaproduct {
 impl MetaproductFields {
 
     pub fn get_id(&self) -> u32 {
-        self.id
+        self.id_metaproduct
     }
 
     pub fn get_name_en(&self) -> &str {
-        &self.name_en
+        &self.en_name
     }
 
     pub fn get_name_loc(&self) -> &str {
-        &self.name_loc
+        &self.loc_name
     }
 
     pub fn get_localizations(&self) -> &[Localization] {
@@ -69,7 +63,7 @@ impl MetaproductFields {
     }
 
     pub fn get_image_url(&self) -> &str {
-        &self.image_url
+        &self.image
     }
 }
 
