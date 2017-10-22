@@ -24,7 +24,7 @@ pub struct User {
     sold_items: u32,
     avg_shipping_time: u32,
     on_vacation: bool,
-    links: Vec<Link>
+    links: Option<Vec<Link>>
 }
 
 #[derive(Deserialize, Debug, Clone)]

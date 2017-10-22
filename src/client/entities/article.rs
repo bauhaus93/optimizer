@@ -19,13 +19,13 @@ pub struct Article {
     in_shopping_cart: bool,
     product: Option<ProductShort>,
     seller: User,
-    last_edited: String,
-    condition: String,
-    is_foil: bool,
-    is_signed: bool,
-    is_altered: bool,
-    is_playset: bool,
-    is_first_ed: bool,
+    last_edited: Option<String>,
+    condition: Option<String>,
+    is_foil: Option<bool>,
+    is_signed: Option<bool>,
+    is_altered: Option<bool>,
+    is_playset: Option<bool>,
+    is_first_ed: Option<bool>,
     links: Vec<Link>
 }
 
