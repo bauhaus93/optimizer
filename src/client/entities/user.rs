@@ -5,7 +5,7 @@ use client::entities::entity_error::EntityError;
 use client::entities::link::Link;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct User {
     id_user: u32,
     username: String,
@@ -28,7 +28,7 @@ pub struct User {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Name {
     company: Option<String>,
     first_name: String,
@@ -36,7 +36,7 @@ pub struct Name {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Address {
     name: Option<String>,
     extra: Option<String>,

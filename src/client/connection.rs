@@ -79,13 +79,11 @@ impl Connection {
 
         match response_code {
             200 | 206 => {  //206 = partial content, is returned when limiting search results
-                info!("response code {}", response_code);
-                info!("bytes read: {}", buffer.len());
+                info!("response code {}, {} bytes read", response_code, buffer.len());
                 Ok(try!(str::from_utf8(&buffer)).to_string())
             },
             207 => {    //207 = no content
-                info!("response code {}", response_code);
-                info!("no content");
+                info!("response code {}, no content", response_code);
                 Ok(String::new())
             },
             _ => Err(ConnectionError::BadResponse(response_code))

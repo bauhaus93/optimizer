@@ -7,7 +7,7 @@ use client::entities::link::Link;
 use client::entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Metaproduct {
     metaproduct: MetaproductFields,
     product: Vec<Product>,
@@ -15,7 +15,7 @@ pub struct Metaproduct {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct MetaproductFields {
     id_metaproduct: u32,
     en_name: String,

@@ -8,7 +8,7 @@ use client::entities::user::User;
 use client::entities::link::Link;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Article {
     id_article: u32,
     id_product: u32,

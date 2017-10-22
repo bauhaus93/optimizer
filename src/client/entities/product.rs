@@ -10,7 +10,7 @@ use client::entities::price_guide::PriceGuide;
 use client::entities::reprint::Reprint;
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Product {
     id_product: u32,
     id_metaproduct: u32,
@@ -32,7 +32,7 @@ pub struct Product {
 }
 
 #[derive(Deserialize, Debug, Clone)]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct ProductShort {
     en_name: String,
     loc_name: String,
