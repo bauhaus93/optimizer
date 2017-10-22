@@ -75,13 +75,13 @@ impl Metaproducts {
 
 impl Entity for Metaproduct {
     fn from_json(json: &str) -> Result<Metaproduct, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        Ok(serde_json::from_str(json)?)
     }
 }
 
 impl Entity for Vec<Metaproduct> {
     fn from_json(json: &str) -> Result<Vec<Metaproduct>, EntityError> {
-        let mps: Metaproducts = try!(serde_json::from_str(json));
+        let mps: Metaproducts = serde_json::from_str(json)?;
         Ok(mps.consume())
     }
 }

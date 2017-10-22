@@ -14,7 +14,7 @@ impl MKMClient {
 
     pub fn new(token_path: &str) -> Result<MKMClient, ClientError> {
 
-        let connection = try!(Connection::new(token_path));
+        let connection = Connection::new(token_path)?;
 
         let client = MKMClient {
             connection: connection
@@ -56,8 +56,8 @@ impl MKMClient {
             None => {}
         }
 
-        let json_str = try!(self.connection.request("GET", "metaproducts/find", &query));
-        let metaproducts = try!(Vec::<Metaproduct>::from_json(&json_str));
+        let json_str = self.connection.request("GET", "metaproducts/find", &query)?;
+        let metaproducts = Vec::<Metaproduct>::from_json(&json_str)?;
 
         info!("parsed {} metaproducts", metaproducts.len());
 
@@ -103,9 +103,9 @@ impl MKMClient {
             None => {}
         }
 
-        let json_str = try!(self.connection.request("GET", "products/find", &query));
+        let json_str = self.connection.request("GET", "products/find", &query)?;
         info!("{}", json_str);
-        let products = try!(Vec::<Product>::from_json(&json_str));
+        let products = Vec::<Product>::from_json(&json_str)?;
 
         info!("parsed {} products", products.len());
 
@@ -119,9 +119,9 @@ impl MKMClient {
 
         let uri = format!("products/{}", product_id);
 
-        let json_str = try!(self.connection.request("GET", &uri, &query));
+        let json_str = self.connection.request("GET", &uri, &query)?;
         info!("{}", json_str);
-        let products = try!(Product::from_json(&json_str));
+        let products = Product::from_json(&json_str)?;
 
         info!("parsed 1 product");
 
@@ -145,14 +145,8 @@ impl MKMClient {
 
         let uri = format!("articles/{}", product_id);
 
-        let json_str = try!(self.connection.request("GET", &uri, &query));
-
-        use std::fs::File;
-        use std::io::prelude::*;
-        let mut f = File::create("output.json").unwrap();
-        f.write_all(json_str.as_bytes());
-
-        let articles = try!(Vec::<Article>::from_json(&json_str));
+        let json_str = self.connection.request("GET", &uri, &query)?;
+        let articles = Vec::<Article>::from_json(&json_str)?;
 
         info!("parsed {} articles", articles.len());
 

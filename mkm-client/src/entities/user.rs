@@ -48,6 +48,6 @@ pub struct Address {
 
 impl Entity for User {
     fn from_json(json: &str) -> Result<User, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        Ok(serde_json::from_str(json)?)
     }
 }

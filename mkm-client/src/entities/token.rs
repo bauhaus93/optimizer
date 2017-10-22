@@ -55,7 +55,7 @@ impl fmt::Display for Token {
 
 impl Entity for Token {
     fn from_json(json: &str) -> Result<Token, EntityError> {
-        let token = try!(serde_json::from_str(json));
+        let token = serde_json::from_str(json)?;
         Ok(token)
     }
 }

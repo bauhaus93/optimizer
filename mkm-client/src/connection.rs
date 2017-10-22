@@ -39,10 +39,10 @@ impl Connection {
         let handle = easy::Easy::new();
 
         info!("retrieving app token from file \"{}\"", token_path);
-        let mut file = try!(File::open(token_path));
+        let mut file = File::open(token_path)?;
         let mut content = String::new();
-        try!(file.read_to_string(&mut content));
-        let token = try!(Token::from_json(&content));
+        file.read_to_string(&mut content)?;
+        let token = Token::from_json(&content)?;
 
         let connection = Connection {
             handle: handle,
@@ -58,29 +58,29 @@ impl Connection {
 
         info!("requesting {} {}", method, uri);
 
-        let auth_hdr = try!(create_authorization_header(method, &realm, query, &self.token));
+        let auth_hdr = create_authorization_header(method, &realm, query, &self.token)?;
 
         let mut list = easy::List::new();
-        try!(list.append(&auth_hdr));
-        try!(self.handle.url(&uri));
-        try!(self.handle.http_headers(list));
+        list.append(&auth_hdr)?;
+        self.handle.url(&uri)?;
+        self.handle.http_headers(list)?;
 
         let mut buffer = Vec::new();
         {
             let mut transfer = self.handle.transfer();
-            try!(transfer.write_function(| data | {
+            transfer.write_function(| data | {
                 buffer.extend_from_slice(data);
                 Ok(data.len())
-            }));
-            try!(transfer.perform());
+            })?;
+            transfer.perform()?;
         }
 
-        let response_code = try!(self.handle.response_code());
+        let response_code = self.handle.response_code()?;
 
         match response_code {
             200 | 206 => {  //206 = partial content, is returned when limiting search results
                 info!("response code {}, read {} bytes", response_code, buffer.len());
-                Ok(try!(str::from_utf8(&buffer)).to_string())
+                Ok(str::from_utf8(&buffer)?.to_string())
             },
             207 => {    //207 = no content
                 info!("response code {}, no content", response_code);

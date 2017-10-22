@@ -18,9 +18,9 @@ const OAUTH_SIGNATURE_METHOD: &str = "HMAC-SHA1";
 
 
 pub fn create_authorization_header(method: &str, realm: &str, query: &Vec<(&str, &str)>, token: &Token) -> Result<String, AuthorizationError> {
-    let timestamp = try!(SystemTime::now().duration_since(time::UNIX_EPOCH)).as_secs().to_string();
+    let timestamp = SystemTime::now().duration_since(time::UNIX_EPOCH)?.as_secs().to_string();
     let nonce = rand::thread_rng().gen_ascii_chars().take(32).collect::<String>().to_lowercase();
-    let signature = try!(calculate_signature(method, realm, query, &token, &nonce, &timestamp));
+    let signature = calculate_signature(method, realm, query, &token, &nonce, &timestamp)?;
 
     let header = format!("Authorization: \
         OAuth \

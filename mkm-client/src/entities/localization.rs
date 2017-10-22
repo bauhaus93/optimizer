@@ -13,6 +13,6 @@ pub struct Localization {
 
 impl Entity for Vec<Localization> {
     fn from_json(json: &str) -> Result<Vec<Localization>, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        Ok(serde_json::from_str(json)?)
     }
 }

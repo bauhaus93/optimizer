@@ -13,6 +13,6 @@ pub struct Reprint {
 
 impl Entity for Reprint {
     fn from_json(json: &str) -> Result<Reprint, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        Ok(serde_json::from_str(json)?)
     }
 }

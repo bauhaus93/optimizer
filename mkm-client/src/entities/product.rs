@@ -162,20 +162,20 @@ impl ProductContainer {
 
 impl Entity for Product {
     fn from_json(json: &str) -> Result<Product, EntityError> {
-        let p: ProductContainer = try!(serde_json::from_str(json));
+        let p: ProductContainer = serde_json::from_str(json)?;
         Ok(p.consume())
     }
 }
 
 impl Entity for Vec<Product> {
     fn from_json(json: &str) -> Result<Vec<Product>, EntityError> {
-        let ps: Products = try!(serde_json::from_str(json));
+        let ps: Products = serde_json::from_str(json)?;
         Ok(ps.consume())
     }
 }
 
 impl Entity for ProductShort {
     fn from_json(json: &str) -> Result<ProductShort, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        Ok(serde_json::from_str(json)?)
     }
 }

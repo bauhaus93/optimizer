@@ -44,7 +44,7 @@ impl Articles {
 
 impl Entity for Vec<Article> {
     fn from_json(json: &str) -> Result<Vec<Article>, EntityError> {
-        let articles: Articles = try!(serde_json::from_str(json));
+        let articles: Articles = serde_json::from_str(json)?;
         Ok(articles.consume())
     }
 }

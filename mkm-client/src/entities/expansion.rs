@@ -13,6 +13,6 @@ pub struct Expansion {
 
 impl Entity for Expansion {
     fn from_json(json: &str) -> Result<Expansion, EntityError> {
-        Ok(try!(serde_json::from_str(json)))
+        Ok(serde_json::from_str(json)?)
     }
 }
