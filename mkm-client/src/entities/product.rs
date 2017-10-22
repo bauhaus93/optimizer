@@ -1,13 +1,13 @@
 use serde_json;
 
-use client::entities::entity::Entity;
-use client::entities::entity_error::EntityError;
-use client::entities::localization::Localization;
-use client::entities::category::Category;
-use client::entities::link::Link;
-use client::entities::expansion::Expansion;
-use client::entities::price_guide::PriceGuide;
-use client::entities::reprint::Reprint;
+use entities::entity::Entity;
+use entities::entity_error::EntityError;
+use entities::localization::Localization;
+use entities::category::Category;
+use entities::link::Link;
+use entities::expansion::Expansion;
+use entities::price_guide::PriceGuide;
+use entities::reprint::Reprint;
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

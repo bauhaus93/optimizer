@@ -1,10 +1,10 @@
 use serde_json;
 
-use client::entities::entity::Entity;
-use client::entities::localization::Localization;
-use client::entities::product::Product;
-use client::entities::link::Link;
-use client::entities::entity_error::EntityError;
+use entities::entity::Entity;
+use entities::localization::Localization;
+use entities::product::Product;
+use entities::link::Link;
+use entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

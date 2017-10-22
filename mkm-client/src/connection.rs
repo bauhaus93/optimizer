@@ -5,10 +5,10 @@ use std::io::Read;
 use curl::easy;
 use url::percent_encoding::{ utf8_percent_encode, QUERY_ENCODE_SET };
 
-use client::connection_error::ConnectionError;
-use client::entities::token::Token;
-use client::entities::entity::Entity;
-use client::authorization_header::create_authorization_header;
+use connection_error::ConnectionError;
+use entities::token::Token;
+use entities::entity::Entity;
+use authorization_header::create_authorization_header;
 
 fn create_uri(realm: &str, query: &Vec<(&str, &str)>) -> String {
     let mut query_string = String::new();

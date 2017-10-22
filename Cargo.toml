@@ -5,17 +5,10 @@ authors = ["Jakob Fischer <JakobFischer93@gmail.com>"]
 
 [dependencies]
 
+genetic = { path = "genetic/" }
+mkm_client = { path = "mkm-client/" }
+
 rand = "0.3"
 log = "0.3"
 env_logger = "0.3"
 chrono = "0.3"
-
-curl = "0.4.8"
-
-serde = "1.0.15"
-serde_derive = "1.0.15"
-serde_json = "1.0.3"
-
-url = "1.5.1"
-rust-crypto = "0.2.36"
-base64 = "0.7.0"

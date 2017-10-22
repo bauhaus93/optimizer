@@ -1,5 +1,5 @@
 
-use client::entities::entity_error::EntityError;
+use entities::entity_error::EntityError;
 
 pub trait Entity
 where Self: Sized {

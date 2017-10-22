@@ -10,8 +10,8 @@ use crypto::mac::Mac;
 use crypto::sha1::Sha1;
 use base64;
 
-use client::authorization_error::AuthorizationError;
-use client::entities::token::Token;
+use authorization_error::AuthorizationError;
+use entities::token::Token;
 
 const OAUTH_VERSION: &str = "1.0";
 const OAUTH_SIGNATURE_METHOD: &str = "HMAC-SHA1";

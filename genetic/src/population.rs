@@ -1,9 +1,8 @@
-
 use std::fmt::Display;
 
-use genetic::sequence::{ Sequence, Encodeable, Decodeable };
-use genetic::fitness::Fitness;
-use genetic::mutable::Mutable;
+use sequence::{ Sequence, Encodeable, Decodeable };
+use fitness::Fitness;
+use mutable::Mutable;
 use utility::random;
 
 pub struct Population<TObj, TEnc>{

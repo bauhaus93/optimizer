@@ -4,7 +4,7 @@ use std::fmt;
 use std::fmt::Display;
 
 
-use genetic::fitness::Fitness;
+use fitness::Fitness;
 use utility::random;
 
 pub trait Encodeable<TEnc> {

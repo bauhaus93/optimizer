@@ -1,10 +1,10 @@
-use client::client_error::ClientError;
-use client::connection::Connection;
+use client_error::ClientError;
+use connection::Connection;
 
-use client::entities::entity::Entity;
-use client::entities::metaproduct::Metaproduct;
-use client::entities::product::Product;
-use client::entities::article::Article;
+use entities::entity::Entity;
+use entities::metaproduct::Metaproduct;
+use entities::product::Product;
+use entities::article::Article;
 
 pub struct MKMClient {
     connection: Connection

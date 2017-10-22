@@ -1,9 +1,10 @@
 #[macro_use]
 extern crate log;
 extern crate optimizer;
+extern crate mkm_client;
 
 use optimizer::logger;
-use optimizer::client::mkm_client::MKMClient;
+use mkm_client::mkm_client::MKMClient;
 
 pub fn main() {
     match logger::init() {

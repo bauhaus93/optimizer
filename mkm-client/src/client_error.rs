@@ -1,8 +1,8 @@
 use std::error::Error;
 use std::fmt;
 
-use client::connection_error::ConnectionError;
-use client::entities::entity_error::EntityError;
+use connection_error::ConnectionError;
+use entities::entity_error::EntityError;
 
 #[derive(Debug)]
 pub enum ClientError {

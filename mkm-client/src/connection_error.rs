@@ -5,8 +5,8 @@ use std::io;
 
 use curl;
 
-use client::authorization_error::AuthorizationError;
-use client::entities::entity_error::EntityError;
+use authorization_error::AuthorizationError;
+use entities::entity_error::EntityError;
 
 #[derive(Debug)]
 pub enum ConnectionError {

@@ -1,7 +1,7 @@
 use serde_json;
 
-use client::entities::entity::Entity;
-use client::entities::entity_error::EntityError;
+use entities::entity::Entity;
+use entities::entity_error::EntityError;
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
