@@ -32,7 +32,8 @@ pub struct Article {
 #[derive(Deserialize, Debug, Clone)]
 struct Articles {
     #[serde(rename="article")]
-    articles: Vec<Article>
+    articles: Vec<Article>,
+    links: Vec<Link>
 }
 
 impl Articles {

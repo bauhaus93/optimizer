@@ -62,7 +62,7 @@ fn calculate_signature(method: &str, realm: &str, query: &Vec<(&str, &str)>, tok
     });
     param_string.pop(); param_string.pop(); param_string.pop();
 
-    info!("param_string: {}", param_string);
+    debug!("oauth param_string: {}", param_string);
 
     /*let param_string= format!("\
         oauth_consumer_key%3D{}%26\

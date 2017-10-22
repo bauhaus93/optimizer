@@ -76,14 +76,19 @@ impl Connection {
         }
 
         let response_code = try!(self.handle.response_code());
-        info!("response code {}", response_code);
 
-        if response_code == 200 {
-            info!("bytes read: {}", buffer.len());
-            Ok(try!(str::from_utf8(&buffer)).to_string())
-        }
-        else {
-            Err(ConnectionError::BadResponse(response_code))
+        match response_code {
+            200 | 206 => {  //206 = partial content, is returned when limiting search results
+                info!("response code {}", response_code);
+                info!("bytes read: {}", buffer.len());
+                Ok(try!(str::from_utf8(&buffer)).to_string())
+            },
+            207 => {    //207 = no content
+                info!("response code {}", response_code);
+                info!("no content");
+                Ok(String::new())
+            },
+            _ => Err(ConnectionError::BadResponse(response_code))
         }
     }
 
