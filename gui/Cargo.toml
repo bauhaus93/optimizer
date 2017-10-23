@@ -1,0 +1,8 @@
+[package]
+name = "gui"
+version = "0.1.0"
+authors = ["Jakob Fischer <JakobFischer93@gmail.com>"]
+
+[dependencies]
+log = "0.3"
+conrod = "0.56.0"
