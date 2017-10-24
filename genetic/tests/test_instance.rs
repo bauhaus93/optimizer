@@ -32,7 +32,7 @@ impl EvenEncoding {
 
     pub fn new() -> EvenEncoding {
         let mut data: Vec<u8> = Vec::new();
-        for _ in 0..1000 {
+        for _ in 0..50 {
             data.push(rand::thread_rng().gen::<u8>() % 10)
         }
         EvenEncoding {
@@ -114,7 +114,8 @@ fn test_even_sequence() {
     let problem = EvenSequence::new();
     let mut population = Population::new(&problem, 20, 10);
 
-    population.cycle(100000);
-    println!("population info: {}", population);
-    assert!(5 < 3);
+    for _ in 0..10 {
+        population.cycle(1000);
+        println!("population info: {}", population);
+    }
 }

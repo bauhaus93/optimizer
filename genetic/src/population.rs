@@ -52,18 +52,7 @@ where TEnc: PartialEq + fmt::Display {
             child = self.problem.mutate_solution(child);
         }
 
-        let mut in_list = false;
-        for solution in &self.pool {
-            if &child >= solution {
-                break;
-            }
-            if &child == solution {
-                in_list = true;
-                break;
-            }
-        }
-
-        if !in_list {
+        if !self.pool.iter().any(| ref e | *e ==  &child) {
             self.pool.push(child);
             self.sort();
             self.cut();
@@ -97,6 +86,13 @@ where TEnc: PartialEq + fmt::Display {
     pub fn get_cycle_count(&self) -> u32 {
         self.total_cycles
     }
+
+    /*pub fn print_population(&self) {
+        println!("population:");
+        for sol in &self.pool {
+            println!("solution: {}", sol);
+        }
+    }*/
 
     fn select_parents(&self) -> (&Solution<TEnc>, &Solution<TEnc>) {
 

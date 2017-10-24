@@ -42,7 +42,12 @@ where TEnc: PartialEq + fmt::Display {
 impl<TEnc> PartialEq for Solution<TEnc>
 where TEnc: PartialEq + fmt::Display {
     fn eq(&self, other: &Self) -> bool {
-        self.encoding.eq(&other.encoding)
+        if self.fitness == other.fitness {
+            self.encoding.eq(&other.encoding)
+        }
+        else {
+            false
+        }
     }
 }
 
