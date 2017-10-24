@@ -2,13 +2,13 @@ use std::fmt;
 use std::cmp::Ordering;
 
 pub struct Solution<TEnc>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
     encoding: TEnc,
     fitness: u32
 }
 
 impl<TEnc> Solution<TEnc>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
 
     pub fn new(encoding: TEnc, fitness: u32) -> Solution<TEnc> {
         Solution {
@@ -30,17 +30,8 @@ where TEnc: PartialEq + fmt::Display {
     }
 }
 
-impl<TEnc> fmt::Display for Solution<TEnc>
-where TEnc: PartialEq + fmt::Display {
-
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}, {})", self.fitness, self.encoding)
-    }
-}
-
-
 impl<TEnc> PartialEq for Solution<TEnc>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
     fn eq(&self, other: &Self) -> bool {
         if self.fitness == other.fitness {
             self.encoding.eq(&other.encoding)
@@ -52,11 +43,11 @@ where TEnc: PartialEq + fmt::Display {
 }
 
 impl<TEnc> Eq for Solution<TEnc>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
 }
 
 impl<TEnc> Ord for Solution<TEnc>
-where   TEnc: PartialEq + fmt::Display,
+where   TEnc: PartialEq,
         Solution<TEnc>: Eq {
     fn cmp(&self, other: &Self) -> Ordering {
         match self.fitness == other.fitness {
@@ -72,7 +63,7 @@ where   TEnc: PartialEq + fmt::Display,
 }
 
 impl<TEnc> PartialOrd for Solution<TEnc>
-where   TEnc: PartialEq + fmt::Display,
+where   TEnc: PartialEq,
         Solution<TEnc>: Eq {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))

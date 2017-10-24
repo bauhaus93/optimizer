@@ -5,7 +5,7 @@ use solution::Solution;
 use utility::random_100;
 
 pub struct Population<'a, TEnc: 'a>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
     problem: &'a Problem<TEnc>,
     max_size: usize,
     mutation_chance: u8,
@@ -14,7 +14,7 @@ where TEnc: PartialEq + fmt::Display {
 }
 
 impl<'a, TEnc> fmt::Display for Population<'a, TEnc>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "cycles: {}, fittest: {}, median: {}",
             self.get_cycle_count(),
@@ -25,7 +25,7 @@ where TEnc: PartialEq + fmt::Display {
 }
 
 impl<'a, TEnc> Population<'a, TEnc>
-where TEnc: PartialEq + fmt::Display {
+where TEnc: PartialEq {
 
     pub fn new(problem: &'a Problem<TEnc>, size: usize, mutation_chance: u8) -> Population<TEnc> {
         info!("Creating population of size {}, mutation chance: {}%", size, mutation_chance);

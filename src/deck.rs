@@ -1,16 +1,9 @@
 use rand;
 use rand::Rng;
 
-use genetic::sequence::{ Encodeable, Decodeable };
-use genetic::fitness::Fitness;
-use genetic::mutable::Mutable;
-
-#[derive(Clone)]
-pub struct Article {
-    id_article: u32,
-    count: u32,
-    price: u32
-}
+use genetic::problem::Problem;
+use genetic::solution::Solution;
+use article::{ Article, calculate_article_fitness };
 
 pub struct CardWanted {
     id_metaproduct: u32,
@@ -22,71 +15,64 @@ pub struct DeckWanted {
     cards: Vec<CardWanted>
 }
 
-pub struct DeckSelection {
-    selection: Vec<Article>,
-    fitness: u32
-}
-
-impl Article {
-
-    pub fn get_total_price(&self) -> u32 {
-        self.count * self.price
-    }
-}
-
 impl CardWanted {
-
     pub fn get_random_article(&self) -> &Article {
+        assert!(self.possible_articles.len() != 0);
         let index = rand::thread_rng().gen::<usize>() % self.possible_articles.len();
         &self.possible_articles[index]
     }
 }
 
-
-
 impl DeckWanted {
-
-    pub fn get_cards(&self) -> &[CardWanted] {
+    pub fn get_wanted_cards(&self) -> &[CardWanted] {
         &self.cards
     }
-
-    pub fn create_random_solution(&self) ->
-
 }
 
-impl DeckSelection {
+impl Problem<Vec<Article>> for DeckWanted {
 
-    pub fn new(wanted: &DeckWanted) -> DeckSelection {
-
+    fn create_random_solution(&self) -> Solution<Vec<Article>> {
         let mut card_selection: Vec<Article> = Vec::new();
         let mut fitness: u32 = 0;
 
-        for card in wanted.get_cards() {
+        for card in self.get_wanted_cards() {
             let article = card.get_random_article();
             fitness += article.get_total_price();
             card_selection.push(article.clone());
         }
-
-        DeckSelection {
-            selection: card_selection,
-            fitness: fitness
-        }
+        Solution::new(card_selection, fitness)
     }
 
-}
+    fn create_child_solution(&self, parents: (&Solution<Vec<Article>>, &Solution<Vec<Article>>)) -> Solution<Vec<Article>> {
+        let selection_a = parents.0.get_encoding();
+        let selection_b = parents.1.get_encoding();
+        assert!(selection_a.len() == selection_b.len());
 
-impl Fitness for DeckSelection {
-    fn get_fitness(&self) -> i32 {
-        self.fitness as i32
+        let split_point: usize = 1 + random(selection_a.len() as u32 - 2) as usize;
+
+        let mut child_selection = Vec::new();
+        child_selection.extend_from_slice(&selection_a[..split_point]);
+        child_selection.extend_from_slice(&selection_b[split_point..]);
+
+        let fitness = calculate_article_fitness(&child_selection);
+
+        Solution::new(child_selection, fitness)
     }
-}
 
-impl Mutable for Sequence<DeckSelection, Article> {
-    fn mutate(&mut self) {
-        for e in &mut self.get_encoding_mut().iter_mut() {
+    fn mutate_solution(&self, solution: Solution<Vec<Article>>) -> Solution<Vec<Article>> {
+        let mut selection = solution.consume();
+
+        for (article, possible_articles) in selection.iter_mut().zip(self.get_wanted_cards().iter()) {
             if random(100) < 20 {
-                *e = (*e + 1) % 10;
+                *article = possible_articles.get_random_article().clone();
             }
         }
+        let fitness = calculate_article_fitness(&selection);
+
+        Solution::new(selection, fitness)
     }
+}
+
+fn random(max: u32) -> u32 {
+    rand::thread_rng().gen::<u32>() % max
 }
