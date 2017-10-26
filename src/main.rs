@@ -5,6 +5,7 @@ extern crate mkm_client;
 
 use optimizer::logger;
 use mkm_client::mkm_client::MKMClient;
+use mkm_client::query::query_builder::QueryBuilder;
 
 pub fn main() {
     match logger::init() {
@@ -23,7 +24,13 @@ pub fn main() {
         }
     };
 
-    let articles = match client.get_articles(295893, 0, 1) {
+    let query = QueryBuilder::new()
+        .start(0)
+        .max_results(1)
+        .finalize();
+
+
+    let articles = match client.get_articles(295893, query) {
         Ok(a) => a,
         Err(e) => {
             error!("{}", e);

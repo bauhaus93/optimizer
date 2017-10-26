@@ -15,15 +15,6 @@ pub struct Token {
 
 impl Token {
 
-    pub fn new(app_token: &str, app_secret: &str, access_token: &str, access_secret: &str) -> Token {
-        Token {
-            app_token: app_token.to_owned(),
-            app_secret: app_secret.to_owned(),
-            access_token: access_token.to_owned(),
-            access_secret: access_secret.to_owned()
-        }
-    }
-
     pub fn get_app_token(&self) -> &str {
         &self.app_token
     }

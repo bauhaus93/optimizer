@@ -11,16 +11,56 @@ use crypto::sha1::Sha1;
 use base64;
 
 use authorization_error::AuthorizationError;
-use entities::token::Token;
+use token::Token;
+use query::Query;
 
 const OAUTH_VERSION: &str = "1.0";
 const OAUTH_SIGNATURE_METHOD: &str = "HMAC-SHA1";
 
+pub struct Request<'a>{
+    method: &'a str,
+    uri: String,
+    query: Query,
+    oauth_header: String
+}
 
-pub fn create_authorization_header(method: &str, realm: &str, query: &Vec<(&str, &str)>, token: &Token) -> Result<String, AuthorizationError> {
+impl<'a> Request<'a> {
+
+    pub fn new(method: &'a str, path: &str, query: Query, token: &Token) -> Result<Request<'a>, AuthorizationError> {
+        info!("creating request for {}, query: {}", path, query);
+        let realm = format!("https://www.mkmapi.eu/ws/v2.0/output.json/{}", path);
+        let uri = realm.clone() + &query.create_query_string();
+
+        let oauth_header = create_authorization_header(method, &realm, &query, &token)?;
+
+        let request = Request {
+            method: method,
+            uri: uri,
+            query: query,
+            oauth_header: oauth_header
+        };
+
+        Ok(request)
+    }
+
+    pub fn get_method(&self) -> &'a str {
+        self.method
+    }
+
+    pub fn get_uri(&self) -> &str {
+        &self.uri
+    }
+
+    pub fn get_oauth_header(&self) -> &str {
+        &self.oauth_header
+    }
+
+}
+
+fn create_authorization_header(method: &str, realm: &str, query: &Query, token: &Token) -> Result<String, AuthorizationError> {
     let timestamp = SystemTime::now().duration_since(time::UNIX_EPOCH)?.as_secs().to_string();
     let nonce = rand::thread_rng().gen_ascii_chars().take(32).collect::<String>().to_lowercase();
-    let signature = calculate_signature(method, realm, query, &token, &nonce, &timestamp)?;
+    let signature = calculate_signature(method, realm, query, token, &nonce, &timestamp)?;
 
     let header = format!("Authorization: \
         OAuth \
@@ -44,40 +84,25 @@ pub fn create_authorization_header(method: &str, realm: &str, query: &Vec<(&str,
     Ok(header)
 }
 
-fn calculate_signature(method: &str, realm: &str, query: &Vec<(&str, &str)>, token: &Token, nonce: &str, timestamp: &str) -> Result<String, AuthorizationError> {
+fn calculate_signature(method: &str, realm: &str, query: &Query, token: &Token, nonce: &str, timestamp: &str) -> Result<String, AuthorizationError> {
     let base_string = format!("{}&{}&", method, utf8_percent_encode(realm, USERINFO_ENCODE_SET).to_string());
-    let mut params: Vec<(&str, &str)> = query.clone();
-    params.push(("oauth_consumer_key", token.get_app_token()));
-    params.push(("oauth_nonce", nonce));
-    params.push(("oauth_signature_method", OAUTH_SIGNATURE_METHOD));
-    params.push(("oauth_timestamp", timestamp));
-    params.push(("oauth_token", token.get_access_token()));
-    params.push(("oauth_version", OAUTH_VERSION));
+    let mut params: Vec<(&str, String)> = query.get_elements().to_vec();
+    params.push(("oauth_consumer_key", token.get_app_token().to_owned()));
+    params.push(("oauth_nonce", nonce.to_owned()));
+    params.push(("oauth_signature_method", OAUTH_SIGNATURE_METHOD.to_owned()));
+    params.push(("oauth_timestamp", timestamp.to_owned()));
+    params.push(("oauth_token", token.get_access_token().to_owned()));
+    params.push(("oauth_version", OAUTH_VERSION.to_owned()));
     params.sort();
 
     let mut param_string = String::new();
 
-    params.iter().for_each(| &(key, value) | {
+    params.iter().for_each(| &(key, ref value) | {
         param_string.push_str(&format!("{}%3D{}%26", key, value));
     });
     param_string.pop(); param_string.pop(); param_string.pop();
 
     debug!("oauth param_string: {}", param_string);
-
-    /*let param_string= format!("\
-        oauth_consumer_key%3D{}%26\
-        oauth_nonce%3D{}%26\
-        oauth_signature_method%3D{}%26\
-        oauth_timestamp%3D{}%26\
-        oauth_token%3D{}%26\
-        oauth_version%3D{}",
-        token.get_app_token(),
-        nonce,
-        OAUTH_SIGNATURE_METHOD,
-        timestamp,
-        token.get_access_token(),
-        OAUTH_VERSION
-    );*/
 
     let base_string = format!("{}{}",
         base_string,

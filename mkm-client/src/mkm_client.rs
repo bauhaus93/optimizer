@@ -1,5 +1,14 @@
+use std::fs::File;
+use std::io::Read;
+use std::str;
+
+use curl::easy;
+
 use client_error::ClientError;
-use connection::Connection;
+
+use request::Request;
+use token::Token;
+use query::Query;
 
 use entities::entity::Entity;
 use entities::metaproduct::Metaproduct;
@@ -7,147 +16,101 @@ use entities::product::Product;
 use entities::article::Article;
 
 pub struct MKMClient {
-    connection: Connection
+    handle: easy::Easy,
+    token: Token
 }
 
 impl MKMClient {
 
     pub fn new(token_path: &str) -> Result<MKMClient, ClientError> {
+        info!("creating new client");
 
-        let connection = Connection::new(token_path)?;
+        info!("creating curl handle");
+        let handle = easy::Easy::new();
+
+        info!("retrieving app token from file \"{}\"", token_path);
+        let mut file = File::open(token_path)?;
+        let mut content = String::new();
+        file.read_to_string(&mut content)?;
+        let token = Token::from_json(&content)?;
 
         let client = MKMClient {
-            connection: connection
+            handle: handle,
+            token
         };
 
         Ok(client)
     }
 
-    pub fn find_metaproducts(&mut self, search: &str, exact: bool, game_id: Option<u32>, language_id: Option<u32>) -> Result<Vec<Metaproduct>, ClientError> {
-        info!("find metaproducts: search = {}, exact = {}, game_id = {:?}, language_id = {:?}",
-            search,
-            exact,
-            game_id,
-            language_id
-        );
+    fn request(&mut self, rq: Request) -> Result<String, ClientError> {
 
-        let exact_str = exact.to_string();
-        let game_id_str = match game_id {
-            Some(id) => Some(id.to_string()),
-            None => None
-        };
-        let language_id_str = match language_id {
-            Some(id) => Some(id.to_string()),
-            None => None
-        };
+        let mut list = easy::List::new();
+        list.append(rq.get_oauth_header())?;
+        self.handle.url(rq.get_uri())?;
+        self.handle.http_headers(list)?;
 
-        let mut query: Vec<(&str, &str)> = Vec::new();
-
-        query.push(("search", search));
-        query.push(("exact", &exact_str));
-
-        match game_id_str {
-            Some(ref id) => query.push(("idGame", id)),
-            None => {}
+        let mut buffer = Vec::new();
+        {
+            let mut transfer = self.handle.transfer();
+            transfer.write_function(| data | {
+                buffer.extend_from_slice(data);
+                Ok(data.len())
+            })?;
+            transfer.perform()?;
         }
 
-        match language_id_str {
-            Some(ref id) => query.push(("idLanguage", id)),
-            None => {}
-        }
+        let response_code = self.handle.response_code()?;
 
-        let json_str = self.connection.request("GET", "metaproducts/find", &query)?;
+        match response_code {
+            200 | 206 => {  //206 = partial content, is returned when limiting search results
+                info!("response code {}, read {} bytes", response_code, buffer.len());
+                Ok(str::from_utf8(&buffer)?.to_string())
+            },
+            207 => {    //207 = no content
+                info!("response code {}, no content", response_code);
+                Ok(String::new())
+            },
+            _ => Err(ClientError::BadResponse(response_code))
+        }
+    }
+
+    pub fn find_metaproducts(&mut self, query: Query) -> Result<Vec<Metaproduct>, ClientError> {
+        let rq = Request::new("GET", "metaproducts/find", query, &self.token)?;
+
+        let json_str = self.request(rq)?;
         let metaproducts = Vec::<Metaproduct>::from_json(&json_str)?;
-
         info!("parsed {} metaproducts", metaproducts.len());
 
         Ok(metaproducts)
     }
 
-    pub fn find_products(&mut self, search: &str, exact: bool, start: u32, max_results: u32, game_id: Option<u32>, language_id: Option<u32>) -> Result<Vec<Product>, ClientError> {
-        info!("find products: search = {}, exact = {}, game_id = {:?}, language_id = {:?}, start = {}, max_results = {}",
-            search,
-            exact,
-            game_id,
-            language_id,
-            start,
-            max_results
-        );
+    pub fn find_products(&mut self, query: Query) -> Result<Vec<Product>, ClientError> {
+        let rq = Request::new("GET", "products/find", query, &self.token)?;
 
-        let exact_str = exact.to_string();
-        let game_id_str = match game_id {
-            Some(id) => Some(id.to_string()),
-            None => None
-        };
-        let language_id_str = match language_id {
-            Some(id) => Some(id.to_string()),
-            None => None
-        };
-        let start_str = start.to_string();
-        let max_results_str = max_results.to_string();
-
-        let mut query: Vec<(&str, &str)> = Vec::new();
-
-        query.push(("search", search));
-        query.push(("exact", &exact_str));
-        query.push(("start", &start_str));
-        query.push(("maxResults", &max_results_str));
-
-        match game_id_str {
-            Some(ref id) => query.push(("idGame", id)),
-            None => {}
-        }
-
-        match language_id_str {
-            Some(ref id) => query.push(("idLanguage", id)),
-            None => {}
-        }
-
-        let json_str = self.connection.request("GET", "products/find", &query)?;
-        info!("{}", json_str);
+        let json_str = self.request(rq)?;
         let products = Vec::<Product>::from_json(&json_str)?;
-
         info!("parsed {} products", products.len());
 
         Ok(products)
     }
 
-    pub fn get_product(&mut self, product_id: u32) -> Result<Product, ClientError> {
-        info!("get product: id = {}", product_id);
+    pub fn get_product(&mut self, product_id: u32, query: Query) -> Result<Product, ClientError> {
+        let realm = format!("products/{}", product_id);
+        let rq = Request::new("GET", &realm, query, &self.token)?;
 
-        let query: Vec<(&str, &str)> = Vec::new();
-
-        let uri = format!("products/{}", product_id);
-
-        let json_str = self.connection.request("GET", &uri, &query)?;
-        info!("{}", json_str);
-        let products = Product::from_json(&json_str)?;
-
+        let json_str = self.request(rq)?;
+        let product = Product::from_json(&json_str)?;
         info!("parsed 1 product");
 
-        Ok(products)
+        Ok(product)
     }
 
-    pub fn get_articles(&mut self, product_id: u32, start: u32, max_results: u32) -> Result<Vec<Article>, ClientError> {
-        info!("get articles: product_id = {}, start = {}, max_results = {}",
-            product_id,
-            start,
-            max_results
-        );
+    pub fn get_articles(&mut self, article_id: u32, query: Query) -> Result<Vec<Article>, ClientError> {
+        let realm = format!("articles/{}", article_id);
+        let rq = Request::new("GET", &realm, query, &self.token)?;
 
-        let start_str = start.to_string();
-        let max_results_str = max_results.to_string();
-
-        let mut query: Vec<(&str, &str)> = Vec::new();
-
-        query.push(("start", &start_str));
-        query.push(("maxResults", &max_results_str));
-
-        let uri = format!("articles/{}", product_id);
-
-        let json_str = self.connection.request("GET", &uri, &query)?;
+        let json_str = self.request(rq)?;
         let articles = Vec::<Article>::from_json(&json_str)?;
-
         info!("parsed {} articles", articles.len());
 
         Ok(articles)

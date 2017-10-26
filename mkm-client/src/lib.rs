@@ -12,11 +12,11 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
-pub mod connection;
-pub mod parse_error;
-pub mod connection_error;
-pub mod authorization_header;
-pub mod authorization_error;
+mod request;
+mod parse_error;
+mod authorization_error;
+mod token;
 pub mod mkm_client;
 pub mod client_error;
 pub mod entities;
+pub mod query;
