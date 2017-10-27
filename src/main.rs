@@ -6,6 +6,7 @@ extern crate mkm_client;
 use optimizer::logger;
 use mkm_client::mkm_client::MKMClient;
 use mkm_client::query::query_builder::QueryBuilder;
+use optimizer::resource_handler::ResourceHandler;
 
 pub fn main() {
     match logger::init() {
@@ -16,7 +17,7 @@ pub fn main() {
         }
     }
 
-    let mut client = match MKMClient::new("app_token.json") {
+    /*let mut client = match MKMClient::new("app_token.json") {
         Ok(c) => c,
         Err(e) => {
             error!("{}", e);
@@ -25,18 +26,20 @@ pub fn main() {
     };
 
     let query = QueryBuilder::new()
-        .start(0)
-        .max_results(1)
+        .name("Tarmogoyf")
         .finalize();
 
+    let mp = client.find_metaproducts(query);*/
 
-    let articles = match client.get_articles(295893, query) {
-        Ok(a) => a,
+    let mut rh = match ResourceHandler::new("app_token.json", "test.db") {
+        Ok(rh) => rh,
         Err(e) => {
             error!("{}", e);
-            return;
+            return
         }
     };
+
+    rh.download_card_data("Tarmogoyf");
 
 
 }

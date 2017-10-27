@@ -13,7 +13,7 @@ pub fn init() -> Result<(), SetLoggerError> {
     };
 
     let mut builder = LogBuilder::new();
-    builder.format(format).filter(None, LogLevelFilter::Info);
+    builder.format(format).filter(None, LogLevelFilter::Debug);
 
     if env::var("RUST_LOG").is_ok() {
        builder.parse(&env::var("RUST_LOG").unwrap());

@@ -100,13 +100,13 @@ impl QueryBuilder {
         }
     }
 
-    pub fn exact(mut self) -> Self {
-        self.exact = Some(true);
+    pub fn name(mut self, name: &str) -> Self {
+        self.name = Some(name.to_owned());
         self
     }
 
-    pub fn not_exact(mut self) -> Self {
-        self.exact = Some(false);
+    pub fn exact(mut self, exact: bool) -> Self {
+        self.exact = Some(exact);
         self
     }
 
@@ -125,33 +125,18 @@ impl QueryBuilder {
         self
     }
 
-    pub fn foil(mut self) -> Self {
-        self.foil = Some(true);
+    pub fn foil(mut self, foil: bool) -> Self {
+        self.foil = Some(foil);
         self
     }
 
-    pub fn not_foil(mut self) -> Self {
-        self.foil = Some(false);
+    pub fn signed(mut self, signed: bool) -> Self {
+        self.signed = Some(signed);
         self
     }
 
-    pub fn signed(mut self) -> Self {
-        self.signed = Some(true);
-        self
-    }
-
-    pub fn not_signed(mut self) -> Self {
-        self.signed = Some(false);
-        self
-    }
-
-    pub fn altered(mut self) -> Self {
-        self.altered = Some(true);
-        self
-    }
-
-    pub fn not_altered(mut self) -> Self {
-        self.altered = Some(false);
+    pub fn altered(mut self, altered: bool) -> Self {
+        self.altered = Some(altered);
         self
     }
 
