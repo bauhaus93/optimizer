@@ -13,3 +13,4 @@ pub mod deck;
 pub mod article;
 pub mod resource_handler;
 pub mod resource_error;
+pub mod db_client;

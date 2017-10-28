@@ -27,7 +27,7 @@ pub struct Request<'a>{
 impl<'a> Request<'a> {
 
     pub fn new(method: &'a str, path: &str, query: Query, token: &Token) -> Result<Request<'a>, AuthorizationError> {
-        info!("creating request for {}, query: {}", path, query);
+        debug!("creating request for {}, query: {}", path, query);
         let realm = format!("https://www.mkmapi.eu/ws/v2.0/output.json/{}", path);
         let uri = realm.clone() + &query.create_query_string();
 

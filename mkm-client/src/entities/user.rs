@@ -46,6 +46,54 @@ pub struct Address {
     country: String
 }
 
+impl User {
+
+    pub fn get_id(&self) -> u32 {
+        self.id_user
+    }
+
+    pub fn get_username(&self) -> &str {
+        &self.username
+    }
+
+    pub fn get_commercial_status(&self) -> u8 {
+        self.is_commercial
+    }
+
+    pub fn get_address(&self) -> &Address {
+        &self.address
+    }
+
+    pub fn get_risk_group(&self) -> u8 {
+        self.risk_group
+    }
+
+    pub fn get_reputation(&self) -> u8 {
+        self.reputation
+    }
+
+    pub fn get_ships_fast(&self) -> u8 {
+        self.ships_fast
+    }
+
+    pub fn get_on_vacation(&self) -> bool {
+        self.on_vacation
+    }
+}
+
+impl Address {
+
+    pub fn get_country(&self) -> &str {
+        &self.country
+    }
+}
+
+impl PartialEq for User {
+    fn eq(&self, other: &User) -> bool {
+        self.id_user == other.id_user
+    }
+}
+
 impl Entity for User {
     fn from_json(json: &str) -> Result<User, EntityError> {
         Ok(serde_json::from_str(json)?)

@@ -23,12 +23,12 @@ pub struct MKMClient {
 impl MKMClient {
 
     pub fn new(token_path: &str) -> Result<MKMClient, ClientError> {
-        info!("creating new client");
+        info!("creating new mkm client, app token path = {}", token_path);
 
         debug!("creating curl handle");
         let handle = easy::Easy::new();
 
-        debug!("retrieving app token from file \"{}\"", token_path);
+        debug!("reading app token");
         let mut file = File::open(token_path)?;
         let mut content = String::new();
         file.read_to_string(&mut content)?;
@@ -68,18 +68,18 @@ impl MKMClient {
 
         let json_str = self.request(rq)?;
         let product = Product::from_json(&json_str)?;
-        info!("parsed 1 product");
+        debug!("parsed 1 product");
 
         Ok(product)
     }
 
-    pub fn get_articles(&mut self, article_id: u32, query: Query) -> Result<Vec<Article>, ClientError> {
-        let realm = format!("articles/{}", article_id);
+    pub fn get_articles(&mut self, product_id: u32, query: Query) -> Result<Vec<Article>, ClientError> {
+        let realm = format!("articles/{}", product_id);
         let rq = Request::new("GET", &realm, query, &self.token)?;
 
         let json_str = self.request(rq)?;
         let articles = Vec::<Article>::from_json(&json_str)?;
-        info!("parsed {} articles", articles.len());
+        debug!("parsed {} articles", articles.len());
 
         Ok(articles)
     }
@@ -110,11 +110,11 @@ impl MKMClient {
 
         match response_code {
             200 | 206 => {  //206 = partial content, is returned when limiting search results
-                info!("response code {}, read {} bytes", response_code, buffer.len());
+                debug!("response code {}, read {} bytes", response_code, buffer.len());
                 Ok(str::from_utf8(&buffer)?.to_string())
             },
             207 => {    //207 = no content
-                info!("response code {}, no content", response_code);
+                debug!("response code {}, no content", response_code);
                 Ok(String::new())
             },
             _ => Err(ClientError::BadResponse(response_code))

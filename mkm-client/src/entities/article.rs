@@ -29,6 +29,61 @@ pub struct Article {
     links: Vec<Link>
 }
 
+impl Article {
+
+    pub fn get_id(&self) -> u32 {
+        self.id_article
+    }
+
+    pub fn get_product_id(&self) -> u32 {
+        self.id_product
+    }
+
+    pub fn get_language(&self) -> &Language {
+        &self.language
+    }
+
+    pub fn get_comments(&self) -> &str {
+        &self.comments
+    }
+
+    pub fn get_price(&self) -> f64 {
+        self.price
+    }
+
+    pub fn get_count(&self) -> u32 {
+        self.count
+    }
+
+    pub fn get_in_shopping_cart(&self) -> bool {
+        self.in_shopping_cart
+    }
+
+    pub fn get_seller(&self) -> &User {
+        &self.seller
+    }
+
+    pub fn get_condition(&self) -> Option<&str> {
+        match self.condition {
+            Some(ref cond) => Some(cond),
+            None => None
+        }
+    }
+
+    pub fn is_foil(&self) -> Option<bool> {
+        self.is_foil
+    }
+
+    pub fn is_signed(&self) -> Option<bool> {
+        self.is_signed
+    }
+
+    pub fn is_altered(&self) -> Option<bool> {
+        self.is_altered
+    }
+
+}
+
 #[derive(Deserialize, Debug, Clone)]
 struct Articles {
     #[serde(rename="article")]
